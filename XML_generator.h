@@ -30,7 +30,6 @@ class XML{
 public:
     void add_child(node n);
     void print_all(std::string xml_name);
-    void print_node(node cur_n);
     XML();
 };
 

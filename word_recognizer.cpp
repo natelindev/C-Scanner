@@ -22,7 +22,7 @@ bool is_operator(std::string opt)
 
 bool is_int(std::string dgt)
 {
-    std::regex r("^[1-9]\\d*[u|U|l|L|ll|LL]*$");
+    std::regex r("^[+-]?(?:0|[1-9]\\d*)(?:u|U|l|L|ll|LL)?$");
     std::smatch m;
     std::regex_search(dgt, m, r);
     return (m.size() > 0);
@@ -30,7 +30,7 @@ bool is_int(std::string dgt)
 
 bool is_float(std::string dgt)
 {
-    std::regex r("^\\d+[.]\\d+[f|F|l|L]*$");
+    std::regex r("^[+-]?\\d+(?:[.]\\d+[fFlL]?|[eE][+-]?\\d+)$");
     std::smatch m;
     std::regex_search(dgt, m, r);
     return (m.size() > 0);
@@ -38,7 +38,7 @@ bool is_float(std::string dgt)
 
 bool is_hex(std::string dgt)
 {
-    std::regex r("^0[x|X]\\d+$");
+    std::regex r("^[+-]?0[xX]\\d+$");
     std::smatch m;
     std::regex_search(dgt, m, r);
     return (m.size() > 0);
@@ -46,7 +46,7 @@ bool is_hex(std::string dgt)
 
 bool is_oct(std::string dgt)
 {
-    std::regex r("^0\\d+$");
+    std::regex r("^[+-]?0\\d+$");
     std::smatch m;
     std::regex_search(dgt, m, r);
     return (m.size() > 0);
@@ -107,7 +107,6 @@ void init_opmap()
     opt_map["~"] = true;
     opt_map["*"] = true;
     opt_map["&"] = true;
-//    opt_map["sizeof"] = true;
     opt_map["*"] = true;
     opt_map["/"] = true;
     opt_map["%"] = true;

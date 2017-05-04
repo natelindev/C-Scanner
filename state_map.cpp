@@ -7,16 +7,36 @@
 //
 
 #include <unordered_map>
+#include "Scanner.h"
 #include "state_map.h"
 
 std::unordered_map<std::pair<states,char>,states,pair_hash> state_map;
+
+states get_state(states cur_state,const char cur_char)
+{
+    static bool next_sign_digit =false;
+    if (next_sign_digit && (cur_char == '-' || cur_char == '+')){
+        next_sign_digit = false;
+        return states::STATE_DGT;
+    }
+    if (cur_state == states::STATE_STR && cur_char!= '\"' && cur_char != '\'' && cur_char != '\n') {
+        return states::STATE_STR;
+    }
+    else{
+        if(cur_state == states::STATE_DGT && (cur_char == 'e' || cur_char == 'E'))
+        {
+            next_sign_digit = true;
+        }
+        return state_map[std::pair<states,char>(cur_state,cur_char)];
+    }
+}
 
 void init_statemap()
 {
     //TABLE for DFA states
     //operator signs
-    state_map[std::pair<states,char>(states::STATE_DFT,'+')] = states::STATE_DGT;
-    state_map[std::pair<states,char>(states::STATE_DFT,'-')] = states::STATE_DGT;
+    state_map[std::pair<states,char>(states::STATE_DFT,'+')] = states::STATE_OPT;
+    state_map[std::pair<states,char>(states::STATE_DFT,'-')] = states::STATE_OPT;
     state_map[std::pair<states,char>(states::STATE_DFT,'*')] = states::STATE_OPT;
     state_map[std::pair<states,char>(states::STATE_DFT,'/')] = states::STATE_OPT;
     state_map[std::pair<states,char>(states::STATE_DFT,'%')] = states::STATE_OPT;
@@ -63,8 +83,8 @@ void init_statemap()
     state_map[std::pair<states,char>(states::STATE_OPT,',')] = states::STATE_OPT;
     state_map[std::pair<states,char>(states::STATE_OPT,'.')] = states::STATE_OPT;
     
-    state_map[std::pair<states,char>(states::STATE_SPT,'+')] = states::STATE_OPT;
-    state_map[std::pair<states,char>(states::STATE_SPT,'-')] = states::STATE_OPT;
+    state_map[std::pair<states,char>(states::STATE_SPT,'+')] = states::STATE_DGT;
+    state_map[std::pair<states,char>(states::STATE_SPT,'-')] = states::STATE_DGT;
     state_map[std::pair<states,char>(states::STATE_SPT,'*')] = states::STATE_OPT;
     state_map[std::pair<states,char>(states::STATE_SPT,'/')] = states::STATE_OPT;
     state_map[std::pair<states,char>(states::STATE_SPT,'%')] = states::STATE_OPT;
@@ -94,22 +114,6 @@ void init_statemap()
     state_map[std::pair<states,char>(states::STATE_DGT,'|')] = states::STATE_OPT;
     state_map[std::pair<states,char>(states::STATE_DGT,',')] = states::STATE_OPT;
     state_map[std::pair<states,char>(states::STATE_DGT,'.')] = states::STATE_DGT;
-    
-    state_map[std::pair<states,char>(states::STATE_STR,'+')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'-')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'*')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'/')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'%')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'<')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'>')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'=')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'!')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'~')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'&')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'^')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'|')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,',')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'.')] = states::STATE_STR;
     
     //separator signs
     
@@ -152,14 +156,6 @@ void init_statemap()
     state_map[std::pair<states,char>(states::STATE_DGT,'(')] = states::STATE_SPT;
     state_map[std::pair<states,char>(states::STATE_DGT,')')] = states::STATE_SPT;
     state_map[std::pair<states,char>(states::STATE_DGT,';')] = states::STATE_SPT;
-    
-    state_map[std::pair<states,char>(states::STATE_STR,'{')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'}')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'[')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,']')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'(')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,')')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,';')] = states::STATE_STR;
     
     //identifier signs
     
@@ -290,70 +286,6 @@ void init_statemap()
     state_map[std::pair<states,char>(states::STATE_IDT,'8')] = states::STATE_IDT;
     state_map[std::pair<states,char>(states::STATE_IDT,'9')] = states::STATE_IDT;
     state_map[std::pair<states,char>(states::STATE_IDT,'0')] = states::STATE_IDT;
-    
-    state_map[std::pair<states,char>(states::STATE_STR,'A')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'B')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'C')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'D')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'E')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'F')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'G')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'H')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'I')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'J')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'K')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'L')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'M')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'N')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'O')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'P')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'Q')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'R')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'S')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'T')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'U')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'V')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'W')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'X')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'Y')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'Z')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'a')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'b')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'c')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'d')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'e')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'f')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'g')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'h')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'i')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'j')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'k')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'l')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'m')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'n')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'o')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'p')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'q')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'r')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'s')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'t')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'u')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'v')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'w')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'x')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'y')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'z')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'_')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'1')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'2')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'3')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'4')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'5')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'6')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'7')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'8')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'9')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'0')] = states::STATE_STR;
     
     state_map[std::pair<states,char>(states::STATE_OPT,'A')] = states::STATE_IDT;
     state_map[std::pair<states,char>(states::STATE_OPT,'B')] = states::STATE_IDT;
@@ -579,10 +511,5 @@ void init_statemap()
     state_map[std::pair<states,char>(states::STATE_DGT,'\t')] = states::STATE_DFT;
     state_map[std::pair<states,char>(states::STATE_DGT,'\n')] = states::STATE_DFT;
     
-    state_map[std::pair<states,char>(states::STATE_STR,' ')] = states::STATE_STR;
-    state_map[std::pair<states,char>(states::STATE_STR,'\t')] = states::STATE_STR;
     state_map[std::pair<states,char>(states::STATE_STR,'\n')] = states::STATE_ERR;
-    
-    // '\' sign
-    state_map[std::pair<states,char>(states::STATE_STR,'\\')] = states::STATE_STR;
 }

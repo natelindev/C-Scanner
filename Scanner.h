@@ -8,7 +8,7 @@
 
 #ifndef Scanner_h
 #define Scanner_h
-
+#define COMPATIBLE_MODE false
 #include "word_recognizer.h"
 #include "XML_generator.h"
 #define handle_idt() \
@@ -39,28 +39,35 @@
 
 #define handle_opt() \
 {\
-    if (!opt.empty()) { \
-        node tk,v;\
-        tk.add_attribute("token");\
-        v.add_attribute("number");\
-        v.add_attribute("value");\
-        v.add_attribute("type");\
-        v.add_attribute("line");\
-        v.add_attribute("valid");\
-        v.add_value(std::to_string(word_count));\
-        v.add_value(opt);\
-        if (is_operator(opt)) { \
-            v.add_value("operator");\
-        }else{\
-            v.add_value("identifier");\
+    if (!opt.empty()) {\
+        int _i = 0;\
+        while( _i < opt.length())\
+        {\
+            for (int j = (int)opt.length()-1; j >= _i ; --j)\
+            {\
+                if (is_operator(opt.substr(_i,(j-_i+1))))\
+                {\
+                    node tk,v;\
+                    tk.add_attribute("token");\
+                    v.add_attribute("number");\
+                    v.add_attribute("value");\
+                    v.add_attribute("type");\
+                    v.add_attribute("line");\
+                    v.add_attribute("valid");\
+                    v.add_value(std::to_string(word_count));\
+                    v.add_value(opt.substr(_i,(j-_i+1)));\
+                    v.add_value("operator");\
+                    v.add_value(std::to_string(line_count));\
+                    v.add_value("true");\
+                    tk.add_child(v);\
+                    token.push_back(tk);\
+                    ++word_count;\
+                    _i = j+1;\
+                }\
+            }\
         }\
-        v.add_value(std::to_string(line_count));\
-        v.add_value("true");\
-        tk.add_child(v);\
-        token.push_back(tk);\
-        ++word_count;\
-        opt.clear();\
     }\
+    opt.clear();\
 }
 
 #define handle_dgt() \
@@ -75,16 +82,24 @@
         v.add_attribute("valid");\
         v.add_value(std::to_string(word_count));\
         v.add_value(dgt);\
-        if (is_int(dgt)) { \
-            v.add_value("const_i");\
-        }else if (is_float(dgt)){\
-            v.add_value("const_f");\
-        }else if (is_hex(dgt)){\
-            v.add_value("const_h");\
-        }else if (is_oct(dgt)){\
-            v.add_value("const_o");\
-        }else{\
-            v.add_value("error");\
+        if(COMPATIBLE_MODE){\
+            if(is_int(dgt)||is_float(dgt)||is_hex(dgt)||is_oct(dgt))\
+                v.add_value("const_i");\
+            else\
+                v.add_value("error");\
+        }\
+        else{\
+            if (is_int(dgt)) { \
+                v.add_value("const_i");\
+            }else if (is_float(dgt)){\
+                v.add_value("const_f");\
+            }else if (is_hex(dgt)){\
+                v.add_value("const_h");\
+            }else if (is_oct(dgt)){\
+                v.add_value("const_o");\
+            }else{\
+                v.add_value("error");\
+            }\
         }\
         v.add_value(std::to_string(line_count));\
         v.add_value("true");\
@@ -147,18 +162,5 @@ enum class states:unsigned int{
     STATE_STR=6,//string literal state
     STATE_ERR=7//when something go wrong
 };
-
-struct pair_hash {
-    template <class T1, class T2>
-    std::size_t operator () (const std::pair<T1,T2> &p) const {
-        std::size_t h1 = static_cast<std::size_t>(p.first);
-        std::size_t h2 = static_cast<std::size_t>(p.second);
-        std::size_t h3 = static_cast<std::size_t>(states::STATE_ERR);
-        return h1*h3+h2;
-    }
-};
-
-void init_statemap();
-
 
 #endif /* Scanner_h */
