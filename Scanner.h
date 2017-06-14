@@ -154,13 +154,13 @@
 }
 
 enum class states:unsigned int{
-    STATE_DFT=0,//default state
-    STATE_IDT=1,//identifier state
-    STATE_OPT=2,//operator state
-    STATE_SPT=3,//seprator state
-    STATE_DGT=4,//digit state
-    STATE_STR=6,//string literal state
-    STATE_ERR=7//when something go wrong
+    DFT=0,//default state
+    IDT=1,//identifier state
+    OPT=2,//operator state
+    SPT=3,//seprator state
+    DGT=4,//digit state
+    STR=6,//string literal state
+    ERR=7//when something go wrong
 };
 
 #endif /* Scanner_h */

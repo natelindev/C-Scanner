@@ -38,7 +38,7 @@ bool is_float(std::string dgt)
 
 bool is_hex(std::string dgt)
 {
-    std::regex r("^[+-]?0[xX]\\d+$");
+    std::regex r("^[+-]?0[xX][0-9a-fA-F]+$");
     std::smatch m;
     std::regex_search(dgt, m, r);
     return (m.size() > 0);
@@ -46,7 +46,7 @@ bool is_hex(std::string dgt)
 
 bool is_oct(std::string dgt)
 {
-    std::regex r("^[+-]?0\\d+$");
+    std::regex r("^[+-]?0[0-7]+$");
     std::smatch m;
     std::regex_search(dgt, m, r);
     return (m.size() > 0);

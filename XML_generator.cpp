@@ -74,7 +74,12 @@ void node::print(int sps)
             for (int j = 0; j < sps; ++j) {
                 std::cout<<"  ";
             }
-            std::cout<<"<"<<attributes[i]<<">"<<values[i]<<"</"<<attributes[i]<<">"<<std::endl;
+            //if (values[i].c_str()[0] == '<' || values[i].c_str()[0] == '>') {
+//                std::cout<<"<\\"<<attributes[i]<<">"<<values[i]<<"</"<<attributes[i]<<">"<<std::endl;
+//            }else{
+                std::cout<<"<"<<attributes[i]<<">"<<values[i]<<"</"<<attributes[i]<<">"<<std::endl;
+//            }
+            
         }
     }
 }

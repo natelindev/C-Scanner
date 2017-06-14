@@ -20,8 +20,7 @@ int main(int argc, const char * argv[]) {
     }
     freopen(argv[1], "r", stdin);
     freopen(argv[2], "w", stdout);
-    
-    std::string xml_name = argv[2];
+
     init_keymap();
     init_opmap();
     init_statemap();
@@ -29,11 +28,11 @@ int main(int argc, const char * argv[]) {
     int line_count = 1,word_count = 1;
     std::string idt,opt,dgt,str;
     std::vector<node> token;
-    states cur_state = states::STATE_DFT;
+    states cur_state = states::DFT;
     
     while (std::cin.get(cur_char)) {
         switch (get_state(cur_state,cur_char)) {
-            case states::STATE_DFT:
+            case states::DFT:
                 handle_idt();
                 handle_opt();
                 handle_dgt();
@@ -42,41 +41,41 @@ int main(int argc, const char * argv[]) {
                 if (cur_char == '\n') {
                     ++line_count;
                 }
-                cur_state = states::STATE_DFT;
+                cur_state = states::DFT;
                 break;
-            case states::STATE_IDT:
+            case states::IDT:
                 handle_opt();
                 handle_dgt();
                 handle_spt();
                 idt.push_back(cur_char);
-                cur_state = states::STATE_IDT;
+                cur_state = states::IDT;
                 break;
-            case states::STATE_DGT:
+            case states::DGT:
                 handle_idt();
                 handle_opt();
                 handle_spt();
                 dgt.push_back(cur_char);
-                cur_state = states::STATE_DGT;
+                cur_state = states::DGT;
                 break;
-            case states::STATE_OPT:
+            case states::OPT:
                 handle_idt();
                 handle_dgt();
                 handle_spt();
                 opt.push_back(cur_char);
-                cur_state = states::STATE_OPT;
+                cur_state = states::OPT;
                 break;
-            case states::STATE_SPT:
+            case states::SPT:
                 handle_idt();
                 handle_dgt();
                 handle_opt();
                 handle_spt();
-                cur_state = states::STATE_SPT;
+                cur_state = states::SPT;
                 break;
-            case states::STATE_STR:
+            case states::STR:
                 str.push_back(cur_char);
-                cur_state = states::STATE_STR;
+                cur_state = states::STR;
                 break;
-            case states::STATE_ERR:
+            case states::ERR:
             default:
                 std::cerr<<"line "<<line_count<<":"<<word_count;
                 std::cerr<<"token recognition error at: ";
@@ -112,7 +111,7 @@ int main(int argc, const char * argv[]) {
         tks.add_child(t);
     }
     xml.add_child(tks);
-    xml.print_all(xml_name);
+    xml.print_all(argv[2]);
     return 0;
 }
 
