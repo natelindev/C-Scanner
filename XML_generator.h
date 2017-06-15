@@ -21,6 +21,10 @@ public:
     void add_value(std::string value);
     void add_child(node n);
     void print(int sps);
+    
+    //Check index range before calling
+    node get_child(int n);
+    std::string get_value(int n);
 };
 
 class XML{

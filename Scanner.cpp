@@ -90,6 +90,7 @@ int main(int argc, const char * argv[]) {
     }
     
     //XML output
+    fflush(stdin);
     XML xml;
     node tks,end,tk;
     tks.add_attribute("tokens");
