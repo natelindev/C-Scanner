@@ -121,7 +121,7 @@
         v.add_attribute("line");\
         v.add_attribute("valid");\
         v.add_value(std::to_string(word_count));\
-        v.add_value(str+"\"");\
+        v.add_value(str+cur_char);\
         v.add_value("stringLiteral");\
         v.add_value(std::to_string(line_count));\
         v.add_value("true");\
